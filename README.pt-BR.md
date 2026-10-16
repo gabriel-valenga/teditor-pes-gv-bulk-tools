@@ -24,6 +24,9 @@ Não é necessário instalar Node.js, utilizar um gerenciador de pacotes ou exec
 
 ## Instalação e utilização
 
+## vídeo demonstrando o processo:
+https://youtu.be/4y4vfS4Slqg?si=AegyLe7v-sQKdTd1
+
 ### 1. Abra o TEditor
 
 Acesse o [TEditor](https://teditor.app/) e carregue os dados dos jogadores do PES 2021.
@@ -244,6 +247,8 @@ Ao editar um grande grupo de jogadores, prefira alterações pequenas e confira 
 - **Escopo do PES 2021:** a ferramenta foi desenvolvida para editar dados de jogadores por meio do TEditor. Ela não se destina a modificar arquivos executáveis do jogo.
 - **Projeto independente:** esta é uma ferramenta comunitária independente, não uma funcionalidade oficial do TEditor.
 - **Foto do treinador:** ao importar no jogo um arquivo `.ted` exportado pelo TEditor, a foto do treinador pode ser perdida.
+- **Configuração do estádio do time**: Ao importar no jogo um arquivo .ted exportado pelo TEditor, a configuração do estádio do time pode ser perdida.
+- **Jogadores com rosto e corpo de patch sem tatuagens (ocorre atualmente apenas com patches para PC)**: Ao importar no jogo um arquivo .ted exportado pelo TEditor, a cor da pele do jogador (principalmente nos braços) pode ficar diferente da cor do rosto após a edição. Nesse caso, evite editar esse jogador pelo TEditor. Como alternativa, restaure o arquivo .ted de backup no jogo, transfira o jogador para outro time antes de exportar novamente o arquivo .ted e edite o arquivo do time com o script de edição em massa no TEditor. Depois, faça as alterações desse jogador manualmente no editor interno do jogo e transfira-o de volta para o time original.
 
 ## Solução de problemas
 

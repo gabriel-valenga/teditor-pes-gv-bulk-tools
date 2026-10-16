@@ -24,6 +24,9 @@ No Node.js installation, package manager, or build process is required. The scri
 
 ## Installation and Usage
 
+## video demonstrating the process:
+https://youtu.be/4y4vfS4Slqg?si=AegyLe7v-sQKdTd1
+
 ### 1. Open TEditor
 
 Visit [TEditor](https://teditor.app/) and load your PES 2021 player data.
@@ -244,6 +247,8 @@ When editing a large group of players, use small adjustments and review the prev
 - **PES 2021 scope:** The tool is designed for player-data editing through TEditor. It is not intended to modify game executable files.
 - **Unofficial project:** This is an independent community utility, not an official TEditor feature.
 - **Manager photo:** When importing a `.ted` file exported by TEditor into the game, the manager's photo may be lost.
+- **Team stadium configuration:** When importing a `.ted` file exported by TEditor into the game, the team  stadium configuration may be lost.
+- **Player with patched face and body without tatoos (occurs only with PC patches at the moment):** When importing a `.ted` file exported by TEditor into the game, the player skin color (mainly arms) could differ from his face skin color after edit, in this case you will have to avoid edit this player using teditor (tip: revert your ted application, pick your backup ted and apply in the game, transfer this player to another team before export ted again, and then edit the team ted with bulk script in teditor, and in the game internal editor do changes manually only in this player, and then transfer him back to the team)
 
 ## Troubleshooting
 
