@@ -243,6 +243,7 @@ When editing a large group of players, use small adjustments and review the prev
 - **Position data:** Filtering depends on the position information available in the loaded database.
 - **PES 2021 scope:** The tool is designed for player-data editing through TEditor. It is not intended to modify game executable files.
 - **Unofficial project:** This is an independent community utility, not an official TEditor feature.
+- **Manager photo:** When importing a `.ted` file exported by TEditor into the game, the manager's photo may be lost.
 
 ## Troubleshooting
 

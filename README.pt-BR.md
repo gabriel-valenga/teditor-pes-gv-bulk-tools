@@ -243,6 +243,7 @@ Ao editar um grande grupo de jogadores, prefira alterações pequenas e confira 
 - **Dados de posição:** a filtragem depende das informações de posição disponíveis no banco de dados carregado.
 - **Escopo do PES 2021:** a ferramenta foi desenvolvida para editar dados de jogadores por meio do TEditor. Ela não se destina a modificar arquivos executáveis do jogo.
 - **Projeto independente:** esta é uma ferramenta comunitária independente, não uma funcionalidade oficial do TEditor.
+- **Foto do treinador:** ao importar no jogo um arquivo `.ted` exportado pelo TEditor, a foto do treinador pode ser perdida.
 
 ## Solução de problemas
 
