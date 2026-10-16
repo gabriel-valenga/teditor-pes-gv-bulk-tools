@@ -1,8 +1,46 @@
 (() => {
-  const store = window.__teditorStore;
+  function findTEditorStore() {
+    const rootEl = document.getElementById("root");
+    if (!rootEl) return null;
+
+    const key = Object.keys(rootEl).find(
+      k => k.startsWith("__reactContainer$")
+    );
+    if (!key) return null;
+
+    const fiber = rootEl[key];
+    const start = fiber?.stateNode?.current || fiber;
+    const stack = [start];
+    const seen = new Set();
+
+    while (stack.length) {
+      const node = stack.pop();
+
+      if (!node || seen.has(node)) continue;
+      seen.add(node);
+
+      const store = node.memoizedProps?.store;
+
+      if (store && typeof store.getState === "function"
+          && typeof store.dispatch === "function") {
+        const state = store.getState();
+
+        if (state?.pes2020Data?.editedData?.players) {
+          return store;
+        }
+      }
+
+      if (node.child) stack.push(node.child);
+      if (node.sibling) stack.push(node.sibling);
+    }
+
+    return null;
+  }
+
+  const store = findTEditorStore();
 
   if (!store) {
-    alert("TEditor store not found. Make sure TEditor is open.");
+    alert("TEditor store not found. Make sure a .ted file is loaded.");
     return;
   }
 
