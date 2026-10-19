@@ -49,16 +49,16 @@
   const positions = ["GK", "CB", "DMF", "CMF", "LB", "AMF", "RWF", "LWF", "RB", "CF"];
 
   const attributes = {
-    attackingProwess: ["Consciência ofensiva", "Attacking Prowess", 40, 99],
+    attackingProwess: ["Talento Ofensivo", "Attacking Prowess", 40, 99],
     ballControl: ["Controle de bola", "Ball Control", 40, 99],
     dribbling: ["Drible", "Dribbling", 40, 99],
-    tightPossession: ["Posse de bola", "Tight Possession", 40, 99],
+    tightPossession: ["Condução firme", "Tight Possession", 40, 99],
     lowPass: ["Passe rasteiro", "Low Pass", 40, 99],
     loftedPass: ["Passe alto", "Lofted Pass", 40, 99],
     finishing: ["Finalização", "Finishing", 40, 99],
     headingAbility: ["Cabeceio", "Heading Ability", 40, 99],
-    placeKicking: ["Bola parada", "Place Kicking", 40, 99],
-    curl: ["Efeito", "Curl", 40, 99],
+    placeKicking: ["Chute colocado", "Place Kicking", 40, 99],
+    curl: ["Curva", "Curl", 40, 99],
     speed: ["Velocidade", "Speed", 40, 99],
     acceleration: ["Aceleração", "Acceleration", 40, 99],
     kickingPower: ["Força do chute", "Kicking Power", 40, 99],
@@ -66,69 +66,69 @@
     physicalContact: ["Contato físico", "Physical Contact", 40, 99],
     balance: ["Equilíbrio", "Balance", 40, 99],
     stamina: ["Resistência", "Stamina", 40, 99],
-    defensiveProwess: ["Consciência defensiva", "Defensive Prowess", 40, 99],
+    defensiveProwess: ["Talento defensivo", "Defensive Prowess", 40, 99],
     ballWinning: ["Desarme", "Ball Winning", 40, 99],
     aggression: ["Agressividade", "Aggression", 40, 99],
-    gkAwareness: ["Consciência de goleiro", "Goalkeeper Awareness", 40, 99],
-    gkCatching: ["Defesa de goleiro", "Goalkeeper Catching", 40, 99],
-    gkClearing: ["Rebatida de goleiro", "Goalkeeper Clearing", 40, 99],
-    gkReflexes: ["Reflexos de goleiro", "Goalkeeper Reflexes", 40, 99],
-    gkReach: ["Alcance de goleiro", "Goalkeeper Reach", 40, 99],
-    weakFootUsage: ["Uso do pé ruim", "Weak Foot Usage", 1, 4],
-    weakFootAccuracy: ["Precisão do pé ruim", "Weak Foot Accuracy", 1, 4],
-    form: ["Condicionamento", "Form / Conditioning", 1, 8],
-    injuryResistance: ["Resistência a lesões", "Injury Resistance", 1, 3]
+    gkAwareness: ["Talento de GO", "Goalkeeper Awareness", 40, 99],
+    gkCatching: ["Firmeza do GO", "Goalkeeper Catching", 40, 99],
+    gkClearing: ["Afast. de bola do GO", "Goalkeeper Clearing", 40, 99],
+    gkReflexes: ["Reflexos do GO", "Goalkeeper Reflexes", 40, 99],
+    gkReach: ["Alcance do GO", "Goalkeeper Reach", 40, 99],
+    weakFootUsage: ["Pior pé [frequência]", "Weak Foot Usage", 1, 4],
+    weakFootAccuracy: ["Pior pé [precisão]", "Weak Foot Accuracy", 1, 4],
+    form: ["Forma física", "Form / Conditioning", 1, 8],
+    injuryResistance: ["Resistência a lesão", "Injury Resistance", 1, 3]
   };
 
   const skills = {
-    scissorsFeint: ["Tesoura", "Scissors Feint"],
-    doubleTouch: ["Duplo toque", "Double Touch"],
+    scissorsFeint: ["Pedalada simples", "Scissors Feint"],
+    doubleTouch: ["Toque duplo", "Double Touch"],
     flipFlap: ["Elástico", "Flip Flap"],
-    marseilleTurn: ["Giro de Marselha", "Marseille Turn"],
+    marseilleTurn: ["360 graus", "Marseille Turn"],
     sombrero: ["Chapéu", "Sombrero"],
-    crossOverTurn: ["Giro cruzado", "Cross Over Turn"],
-    cutBehindAndTurn: ["Corte para trás e giro", "Cut Behind and Turn"],
-    scotchMove: ["Scotch move", "Scotch Move"],
-    stepOnSkillControl: ["Controle com a sola", "Step On Skill Control"],
-    headingSkill: ["Cabeceador", "Heading Skill"],
-    longRangeDrive: ["Chute de longa distância", "Long Range Drive"],
-    chipShotControl: ["Cavadinha", "Chip Shot Control"],
-    longRangeShooting: ["Chute de longe", "Long Range Shooting"],
-    knuckleShot: ["Chute sem efeito", "Knuckle Shot"],
-    dippingShot: ["Chute descendente", "Dipping Shot"],
+    crossOverTurn: ["Corte de calcanhar", "Cross Over Turn"],
+    cutBehindAndTurn: ["Puxada de letra", "Cut Behind and Turn"],
+    scotchMove: ["Finta de letra", "Scotch Move"],
+    stepOnSkillControl: ["Controle de domínio", "Step On Skill Control"],
+    headingSkill: ["Cabeçada", "Heading Skill"],
+    longRangeDrive: ["Chute de longe", "Long Range Drive"],
+    chipShotControl: ["Controle da cavadinha", "Chip Shot Control"],
+    longRangeShooting: ["Precisão à distância", "Long Range Shooting"],
+    knuckleShot: ["Chute com o peito do pé", "Knuckle Shot"],
+    dippingShot: ["Folha seca", "Dipping Shot"],
     risingShot: ["Chute ascendente", "Rising Shot"],
-    acrobaticFinishing: ["Finalização acrobática", "Acrobatic Finishing"],
-    heelTrick: ["Passe de calcanhar", "Heel Trick"],
+    acrobaticFinishing: ["Finaliz. acrobática", "Acrobatic Finishing"],
+    heelTrick: ["Toque de calcanhar", "Heel Trick"],
     firstTimeShot: ["Chute de primeira", "First-time Shot"],
     oneTouchPass: ["Passe de primeira", "One-touch Pass"],
     throughPassing: ["Passe em profundidade", "Through Passing"],
-    weightedPass: ["Passe preciso", "Weighted Pass"],
+    weightedPass: ["Passe na medida", "Weighted Pass"],
     pinpointCrossing: ["Cruzamento preciso", "Pinpoint Crossing"],
-    outsideCurler: ["Chute com a parte externa", "Outside Curler"],
-    rabona: ["Rabona", "Rabona"],
+    outsideCurler: ["Curva para fora", "Outside Curler"],
+    rabona: ["De letra", "Rabona"],
     noLookPass: ["Passe sem olhar", "No Look Pass"],
-    lowLoftedPass: ["Passe alto rasteiro", "Low Lofted Pass"],
-    gkLowPunt: ["Reposição baixa de goleiro", "GK Low Punt"],
-    gkHighPunt: ["Reposição alta de goleiro", "GK High Punt"],
-    longThrow: ["Arremesso longo", "Long Throw"],
-    gkLongThrow: ["Reposição longa de goleiro", "GK Long Throw"],
-    penaltySpecialist: ["Especialista em pênaltis", "Penalty Specialist"],
-    gkPenaltySaver: ["Defesa de pênalti", "GK Penalty Saver"],
-    gamesmanship: ["Cavar falta", "Gamesmanship"],
-    manMarking: ["Marcação individual", "Man Marking"],
-    trackBack: ["Voltar para defender", "Track Back"],
+    lowLoftedPass: ["Passe aéreo baixo", "Low Lofted Pass"],
+    gkLowPunt: ["Repos. baixa do GO", "GK Low Punt"],
+    gkHighPunt: ["Reposição alta do GO", "GK High Punt"],
+    longThrow: ["Arrem. lateral longo", "Long Throw"],
+    gkLongThrow: ["Arrem. longo do GO", "GK Long Throw"],
+    penaltySpecialist: ["Especialista em pênalti", "Penalty Specialist"],
+    gkPenaltySaver: ["Pegador de pênaltis", "GK Penalty Saver"],
+    gamesmanship: ["Malícia", "Gamesmanship"],
+    manMarking: ["Marcação ind.", "Man Marking"],
+    trackBack: ["Voltar para marcar", "Track Back"],
     interception: ["Interceptação", "Interception"],
-    acrobaticClear: ["Corte acrobático", "Acrobatic Clear"],
-    captaincy: ["Capitão", "Captaincy"],
-    superSub: ["Super-reserva", "Super-sub"],
-    fightingSpirit: ["Espírito de luta", "Fighting Spirit"],
-    trickster: ["Truqueiro", "Trickster"],
-    mazingRun: ["Arrancada em zigue-zague", "Mazing Run"],
-    speedingBullet: ["Arrancada veloz", "Speeding Bullet"],
-    incisiveRun: ["Infiltração", "Incisive Run"],
-    longBallExpert: ["Especialista em bolas longas", "Long Ball Expert"],
-    earlyCross: ["Cruzamento antecipado", "Early Cross"],
-    longRanger: ["Especialista em chutes de longe", "Long Ranger"]
+    acrobaticClear: ["Afastamento acrobático", "Acrobatic Clear"],
+    captaincy: ["Liderança", "Captaincy"],
+    superSub: ["Super substituto", "Super-sub"],
+    fightingSpirit: ["Espírito guerreiro", "Fighting Spirit"],
+    trickster: ["Malandro", "Trickster"],
+    mazingRun: ["Drible veloz", "Mazing Run"],
+    speedingBullet: ["Rápido como uma bala", "Speeding Bullet"],
+    incisiveRun: ["Corrida com gás", "Incisive Run"],
+    longBallExpert: ["Perito em bola longa", "Long Ball Expert"],
+    earlyCross: ["Cruz. antecip.", "Early Cross"],
+    longRanger: ["Batedor Pro", "Long Ranger"]
   };
 
   const i18n = {
@@ -139,6 +139,11 @@
       title: "PES GV — Edição em massa",
       close: "Fechar ×",
       intro: "Configure, confira a prévia e só então aplique. Salve o arquivo manualmente no TEditor.",
+      saveConfig: "Salvar configurações",
+      loadConfig: "Carregar configurações",
+      configSaved: "Configurações exportadas para arquivo JSON.",
+      configLoaded: "Configurações carregadas com sucesso.",
+      configInvalid: "Não foi possível carregar o arquivo: formato inválido ou incompatível.",
       targetsTitle: "1. Jogadores-alvo",
       allPositions: "Todas as posições",
       selectedCount: n => `${n} jogador(es) válido(s) selecionado(s).`,
@@ -187,6 +192,11 @@
       title: "PES GV — Bulk Player Editor",
       close: "Close ×",
       intro: "Configure your changes, review the preview, and then apply them. Save the file manually in TEditor.",
+      saveConfig: "Save configuration",
+      loadConfig: "Load configuration",
+      configSaved: "Configuration exported to JSON file.",
+      configLoaded: "Configuration loaded successfully.",
+      configInvalid: "Could not load file: invalid or incompatible format.",
       targetsTitle: "1. Target players",
       allPositions: "All positions",
       selectedCount: n => `${n} valid player(s) selected.`,
@@ -230,7 +240,7 @@
     }
   };
 
-  let lang = "pt-BR";
+    let lang = "pt-BR";
   const t = key => i18n[lang][key];
   const attrLabel = key => attributes[key][lang === "pt-BR" ? 0 : 1];
   const skillLabel = key => skills[key][lang === "pt-BR" ? 0 : 1];
@@ -249,7 +259,12 @@
 
   root.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-      <strong id="pbe-title" style="font-size:17px"></strong>
+      <div>
+        <strong id="pbe-title" style="font-size:17px"></strong>
+        <div id="pbe-version" style="font-size:11px;color:#777;margin-top:2px">
+          v1.1.0
+        </div>
+      </div>
       <button id="pbe-close" type="button"></button>
     </div>
     <div style="display:flex;align-items:center;gap:8px;margin:8px 0">
@@ -260,6 +275,11 @@
       </select>
     </div>
     <p id="pbe-intro" style="margin:6px 0 12px;color:#555"></p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px">
+      <button id="pbe-save-config" type="button"></button>
+      <button id="pbe-load-config" type="button"></button>
+      <input id="pbe-config-file" type="file" accept=".json,application/json" style="display:none">
+    </div>
 
     <fieldset style="margin-bottom:12px">
       <legend><b id="pbe-targets-title"></b></legend>
@@ -370,8 +390,13 @@
     });
   }
 
-  function renderSkills(filter = $("#pbe-skill-search").value) {
-    saveVisibleSkillState();
+  function renderSkills(
+    filter = $("#pbe-skill-search").value,
+    saveCurrentState = true
+  ) {
+    if (saveCurrentState) {
+      saveVisibleSkillState();
+    }
     const container = $("#pbe-skills");
     const q = filter.trim().toLocaleLowerCase(lang === "pt-BR" ? "pt-BR" : "en");
     const matching = Object.entries(skills)
@@ -415,6 +440,8 @@
     $("#pbe-close").textContent = t("close");
     $("#pbe-language-label").textContent = t("language");
     $("#pbe-intro").textContent = t("intro");
+    $("#pbe-save-config").textContent = t("saveConfig");
+    $("#pbe-load-config").textContent = t("loadConfig");
     $("#pbe-targets-title").textContent = t("targetsTitle");
     $("#pbe-all-label").textContent = t("allPositions");
     $("#pbe-attributes-title").textContent = t("attributesTitle");
@@ -441,6 +468,147 @@
     $("#pbe-preview-results").innerHTML = "";
     status(t("ready"));
   }
+
+    function exportConfiguration() {
+    saveVisibleSkillState();
+
+    const config = {
+      format: "pes-gv-bulk-tools-config",
+      version: 1,
+      language: lang,
+      targets: {
+        allPositions: $("#pbe-all").checked,
+        positions: [...root.querySelectorAll(".pbe-pos:checked")].map(el => el.value)
+      },
+      attributes: [...root.querySelectorAll(".pbe-attribute-row")].map(row => ({
+        field: row.querySelector(".pbe-attr-field").value,
+        delta: row.querySelector(".pbe-attr-delta").value
+      })),
+      specialSkills: Object.fromEntries(
+        [...skillState.entries()].map(([key, state]) => [key, {
+          checked: Boolean(state.checked),
+          action: state.action === "false" ? "false" : "true"
+        }])
+      )
+    };
+
+    const blob = new Blob([JSON.stringify(config, null, 2)], {
+      type: "application/json;charset=utf-8"
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "pes-gv-config.json";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    status(t("configSaved"), "#175c2b");
+  }
+
+  function validateConfiguration(config) {
+    if (!config || typeof config !== "object" ||
+        config.format !== "pes-gv-bulk-tools-config" || config.version !== 1 ||
+        !["pt-BR", "en"].includes(config.language) ||
+        !config.targets || typeof config.targets.allPositions !== "boolean" ||
+        !Array.isArray(config.targets.positions) ||
+        !Array.isArray(config.attributes) ||
+        !config.specialSkills || typeof config.specialSkills !== "object") {
+      throw new Error("Invalid configuration structure");
+    }
+
+    if (!config.targets.positions.every(position => positions.includes(position))) {
+      throw new Error("Invalid position filter");
+    }
+
+    const normalizedAttributes = config.attributes.map(item => {
+      if (!item || typeof item !== "object" ||
+          !Object.prototype.hasOwnProperty.call(attributes, item.field) ||
+          item.delta === undefined || item.delta === null ||
+          !Number.isFinite(Number(item.delta))) {
+        throw new Error("Invalid attribute rule");
+      }
+      return { field: item.field, delta: String(item.delta) };
+    });
+
+    const normalizedSkills = {};
+    for (const key of Object.keys(skills)) {
+      const item = config.specialSkills[key];
+      if (item === undefined) {
+        normalizedSkills[key] = { checked: false, action: "true" };
+        continue;
+      }
+      if (!item || typeof item !== "object" || typeof item.checked !== "boolean" ||
+          !["true", "false"].includes(item.action)) {
+        throw new Error("Invalid special skill setting");
+      }
+      normalizedSkills[key] = { checked: item.checked, action: item.action };
+    }
+
+    return {
+      language: config.language,
+      targets: {
+        allPositions: config.targets.allPositions,
+        positions: [...new Set(config.targets.positions)]
+      },
+      attributes: normalizedAttributes,
+      specialSkills: normalizedSkills
+    };
+  }
+
+  function importConfiguration(config) {
+    // Update language first, while the existing skill state is still intact.
+    lang = config.language;
+    $("#pbe-language").value = lang;
+    updateLanguage();
+
+    $("#pbe-all").checked = config.targets.allPositions;
+    root.querySelectorAll(".pbe-pos").forEach(el => {
+      el.checked = config.targets.positions.includes(el.value) && !config.targets.allPositions;
+      el.disabled = config.targets.allPositions;
+    });
+
+    $("#pbe-attribute-rows").innerHTML = "";
+    config.attributes.forEach(rule => addAttributeRow(rule.field, rule.delta));
+
+    for (const key of Object.keys(skills)) {
+      skillState.set(key, config.specialSkills[key] || { checked: false, action: "true" });
+    }
+    $("#pbe-skill-search").value = "";
+    renderSkills("", false);
+
+    invalidatePlan();
+    $("#pbe-preview-results").innerHTML = "";
+    refreshTargetCount();
+    status(t("configLoaded"), "#175c2b");
+  }
+
+  $("#pbe-save-config").addEventListener("click", () => {
+    try {
+      exportConfiguration();
+    } catch (e) {
+      status(`Error exporting configuration: ${e.message || e}`, "#b00020");
+    }
+  });
+
+  $("#pbe-load-config").addEventListener("click", () => {
+    $("#pbe-config-file").click();
+  });
+
+  $("#pbe-config-file").addEventListener("change", async event => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    try {
+      const parsed = JSON.parse(await file.text());
+      const validated = validateConfiguration(parsed);
+      importConfiguration(validated);
+    } catch (e) {
+      status(t("configInvalid"), "#b00020");
+      console.error("PES GV Bulk Tools configuration import failed:", e);
+    } finally {
+      event.target.value = "";
+    }
+  });
 
   $("#pbe-close").addEventListener("click", () => root.remove());
 
@@ -479,8 +647,13 @@
   });
 
   $("#pbe-clear-skills").addEventListener("click", () => {
-    skillState.forEach((state, key) => skillState.set(key, { ...state, checked: false }));
-    renderSkills();
+    skillState.forEach((state, key) => {
+      skillState.set(key, {
+        ...state,
+        checked: false
+      });
+    });
+    renderSkills(undefined, false);
     invalidatePlan();
   });
 
