@@ -370,8 +370,13 @@
     });
   }
 
-  function renderSkills(filter = $("#pbe-skill-search").value) {
-    saveVisibleSkillState();
+  function renderSkills(
+    filter = $("#pbe-skill-search").value,
+    saveCurrentState = true
+  ) {
+    if (saveCurrentState) {
+      saveVisibleSkillState();
+    }
     const container = $("#pbe-skills");
     const q = filter.trim().toLocaleLowerCase(lang === "pt-BR" ? "pt-BR" : "en");
     const matching = Object.entries(skills)
@@ -479,8 +484,13 @@
   });
 
   $("#pbe-clear-skills").addEventListener("click", () => {
-    skillState.forEach((state, key) => skillState.set(key, { ...state, checked: false }));
-    renderSkills();
+    skillState.forEach((state, key) => {
+      skillState.set(key, {
+        ...state,
+        checked: false
+      });
+    });
+    renderSkills(undefined, false);
     invalidatePlan();
   });
 
