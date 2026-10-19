@@ -139,6 +139,11 @@
       title: "PES GV — Edição em massa",
       close: "Fechar ×",
       intro: "Configure, confira a prévia e só então aplique. Salve o arquivo manualmente no TEditor.",
+      saveConfig: "Salvar configurações",
+      loadConfig: "Carregar configurações",
+      configSaved: "Configurações exportadas para arquivo JSON.",
+      configLoaded: "Configurações carregadas com sucesso.",
+      configInvalid: "Não foi possível carregar o arquivo: formato inválido ou incompatível.",
       targetsTitle: "1. Jogadores-alvo",
       allPositions: "Todas as posições",
       selectedCount: n => `${n} jogador(es) válido(s) selecionado(s).`,
@@ -187,6 +192,11 @@
       title: "PES GV — Bulk Player Editor",
       close: "Close ×",
       intro: "Configure your changes, review the preview, and then apply them. Save the file manually in TEditor.",
+      saveConfig: "Save configuration",
+      loadConfig: "Load configuration",
+      configSaved: "Configuration exported to JSON file.",
+      configLoaded: "Configuration loaded successfully.",
+      configInvalid: "Could not load file: invalid or incompatible format.",
       targetsTitle: "1. Target players",
       allPositions: "All positions",
       selectedCount: n => `${n} valid player(s) selected.`,
@@ -230,7 +240,7 @@
     }
   };
 
-  let lang = "pt-BR";
+    let lang = "pt-BR";
   const t = key => i18n[lang][key];
   const attrLabel = key => attributes[key][lang === "pt-BR" ? 0 : 1];
   const skillLabel = key => skills[key][lang === "pt-BR" ? 0 : 1];
@@ -260,6 +270,11 @@
       </select>
     </div>
     <p id="pbe-intro" style="margin:6px 0 12px;color:#555"></p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px">
+      <button id="pbe-save-config" type="button"></button>
+      <button id="pbe-load-config" type="button"></button>
+      <input id="pbe-config-file" type="file" accept=".json,application/json" style="display:none">
+    </div>
 
     <fieldset style="margin-bottom:12px">
       <legend><b id="pbe-targets-title"></b></legend>
@@ -420,6 +435,8 @@
     $("#pbe-close").textContent = t("close");
     $("#pbe-language-label").textContent = t("language");
     $("#pbe-intro").textContent = t("intro");
+    $("#pbe-save-config").textContent = t("saveConfig");
+    $("#pbe-load-config").textContent = t("loadConfig");
     $("#pbe-targets-title").textContent = t("targetsTitle");
     $("#pbe-all-label").textContent = t("allPositions");
     $("#pbe-attributes-title").textContent = t("attributesTitle");
@@ -446,6 +463,147 @@
     $("#pbe-preview-results").innerHTML = "";
     status(t("ready"));
   }
+
+    function exportConfiguration() {
+    saveVisibleSkillState();
+
+    const config = {
+      format: "pes-gv-bulk-tools-config",
+      version: 1,
+      language: lang,
+      targets: {
+        allPositions: $("#pbe-all").checked,
+        positions: [...root.querySelectorAll(".pbe-pos:checked")].map(el => el.value)
+      },
+      attributes: [...root.querySelectorAll(".pbe-attribute-row")].map(row => ({
+        field: row.querySelector(".pbe-attr-field").value,
+        delta: row.querySelector(".pbe-attr-delta").value
+      })),
+      specialSkills: Object.fromEntries(
+        [...skillState.entries()].map(([key, state]) => [key, {
+          checked: Boolean(state.checked),
+          action: state.action === "false" ? "false" : "true"
+        }])
+      )
+    };
+
+    const blob = new Blob([JSON.stringify(config, null, 2)], {
+      type: "application/json;charset=utf-8"
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "pes-gv-config.json";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    status(t("configSaved"), "#175c2b");
+  }
+
+  function validateConfiguration(config) {
+    if (!config || typeof config !== "object" ||
+        config.format !== "pes-gv-bulk-tools-config" || config.version !== 1 ||
+        !["pt-BR", "en"].includes(config.language) ||
+        !config.targets || typeof config.targets.allPositions !== "boolean" ||
+        !Array.isArray(config.targets.positions) ||
+        !Array.isArray(config.attributes) ||
+        !config.specialSkills || typeof config.specialSkills !== "object") {
+      throw new Error("Invalid configuration structure");
+    }
+
+    if (!config.targets.positions.every(position => positions.includes(position))) {
+      throw new Error("Invalid position filter");
+    }
+
+    const normalizedAttributes = config.attributes.map(item => {
+      if (!item || typeof item !== "object" ||
+          !Object.prototype.hasOwnProperty.call(attributes, item.field) ||
+          item.delta === undefined || item.delta === null ||
+          !Number.isFinite(Number(item.delta))) {
+        throw new Error("Invalid attribute rule");
+      }
+      return { field: item.field, delta: String(item.delta) };
+    });
+
+    const normalizedSkills = {};
+    for (const key of Object.keys(skills)) {
+      const item = config.specialSkills[key];
+      if (item === undefined) {
+        normalizedSkills[key] = { checked: false, action: "true" };
+        continue;
+      }
+      if (!item || typeof item !== "object" || typeof item.checked !== "boolean" ||
+          !["true", "false"].includes(item.action)) {
+        throw new Error("Invalid special skill setting");
+      }
+      normalizedSkills[key] = { checked: item.checked, action: item.action };
+    }
+
+    return {
+      language: config.language,
+      targets: {
+        allPositions: config.targets.allPositions,
+        positions: [...new Set(config.targets.positions)]
+      },
+      attributes: normalizedAttributes,
+      specialSkills: normalizedSkills
+    };
+  }
+
+  function importConfiguration(config) {
+    // Update language first, while the existing skill state is still intact.
+    lang = config.language;
+    $("#pbe-language").value = lang;
+    updateLanguage();
+
+    $("#pbe-all").checked = config.targets.allPositions;
+    root.querySelectorAll(".pbe-pos").forEach(el => {
+      el.checked = config.targets.positions.includes(el.value) && !config.targets.allPositions;
+      el.disabled = config.targets.allPositions;
+    });
+
+    $("#pbe-attribute-rows").innerHTML = "";
+    config.attributes.forEach(rule => addAttributeRow(rule.field, rule.delta));
+
+    for (const key of Object.keys(skills)) {
+      skillState.set(key, config.specialSkills[key] || { checked: false, action: "true" });
+    }
+    $("#pbe-skill-search").value = "";
+    renderSkills("", false);
+
+    invalidatePlan();
+    $("#pbe-preview-results").innerHTML = "";
+    refreshTargetCount();
+    status(t("configLoaded"), "#175c2b");
+  }
+
+  $("#pbe-save-config").addEventListener("click", () => {
+    try {
+      exportConfiguration();
+    } catch (e) {
+      status(`Error exporting configuration: ${e.message || e}`, "#b00020");
+    }
+  });
+
+  $("#pbe-load-config").addEventListener("click", () => {
+    $("#pbe-config-file").click();
+  });
+
+  $("#pbe-config-file").addEventListener("change", async event => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    try {
+      const parsed = JSON.parse(await file.text());
+      const validated = validateConfiguration(parsed);
+      importConfiguration(validated);
+    } catch (e) {
+      status(t("configInvalid"), "#b00020");
+      console.error("PES GV Bulk Tools configuration import failed:", e);
+    } finally {
+      event.target.value = "";
+    }
+  });
 
   $("#pbe-close").addEventListener("click", () => root.remove());
 
