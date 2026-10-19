@@ -259,7 +259,12 @@
 
   root.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-      <strong id="pbe-title" style="font-size:17px"></strong>
+      <div>
+        <strong id="pbe-title" style="font-size:17px"></strong>
+        <div id="pbe-version" style="font-size:11px;color:#777;margin-top:2px">
+          v1.1.0
+        </div>
+      </div>
       <button id="pbe-close" type="button"></button>
     </div>
     <div style="display:flex;align-items:center;gap:8px;margin:8px 0">
