@@ -1,4 +1,6 @@
 (() => {
+  const SCRIPT_VERSION = "1.2.0";
+
   function findTEditorStore() {
     const rootEl = document.getElementById("root");
     if (!rootEl) return null;
@@ -153,6 +155,23 @@
       deltaTitle: "Pontos a adicionar ou retirar",
       removeAttribute: "Remover atributo",
       attributesHelp: "Informe quantos pontos adicionar ou retirar. Os valores serão limitados à faixa de cada atributo.",
+      reputationTitle: "4. Reputação por Overall",
+      reputationEnabled: "Definir a reputação de cada jogador conforme o Overall calculado.",
+      configureReputation: "Configurar faixas…",
+      reputationNotConfigured: "Nenhuma faixa configurada",
+      reputationBandsSummary: n => `${n} faixa(s) configurada(s)`,
+      reputationModalTitle: "Configurar reputação por Overall",
+      reputationModalHelp: "Crie de 1 a 8 faixas que cubram o Overall de 40 a 100 sem lacunas ou sobreposições. As faixas de reputação devem começar em 1 e continuar sem lacunas; o valor máximo pode ser menor que 8.",
+      overallFrom: "Overall inicial",
+      overallTo: "Overall final",
+      reputationFrom: "Reputação inicial",
+      reputationTo: "Reputação final",
+      addReputationBand: "+ Adicionar faixa",
+      saveReputationBands: "Salvar faixas",
+      cancel: "Cancelar",
+      removeBand: "Remover faixa",
+      reputationValidation: "Faixas inválidas. Confira a cobertura de Overall 40–100, continuidade da reputação de 1 em diante e a quantidade de valores em cada faixa.",
+      reputationField: "Reputação (Overall)",
       skillsTitle: "3. Habilidades especiais",
       skillSearch: "Filtrar habilidades...",
       selectVisible: "Selecionar visíveis",
@@ -206,6 +225,23 @@
       deltaTitle: "Points to add or subtract",
       removeAttribute: "Remove attribute",
       attributesHelp: "Enter how many points to add or subtract. Values will be clamped to each attribute's valid range.",
+      reputationTitle: "4. Reputation by Overall",
+      reputationEnabled: "Set each player's reputation according to their calculated Overall.",
+      configureReputation: "Configure bands…",
+      reputationNotConfigured: "No bands configured",
+      reputationBandsSummary: n => `${n} band(s) configured`,
+      reputationModalTitle: "Configure reputation by Overall",
+      reputationModalHelp: "Create 1–8 bands covering Overall 40–100 with no gaps or overlaps. Reputation bands must start at 1 and continue without gaps; the maximum may be below 8.",
+      overallFrom: "Overall from",
+      overallTo: "Overall to",
+      reputationFrom: "Reputation from",
+      reputationTo: "Reputation to",
+      addReputationBand: "+ Add band",
+      saveReputationBands: "Save bands",
+      cancel: "Cancel",
+      removeBand: "Remove band",
+      reputationValidation: "Invalid bands. Check Overall coverage 40–100, contiguous reputation ranges starting at 1, and the number of values in each band.",
+      reputationField: "Reputation (Overall)",
       skillsTitle: "3. Special skills",
       skillSearch: "Filter skills...",
       selectVisible: "Select visible",
@@ -240,9 +276,9 @@
     }
   };
 
-    let lang = "pt-BR";
+  let lang = "pt-BR";
   const t = key => i18n[lang][key];
-  const attrLabel = key => attributes[key][lang === "pt-BR" ? 0 : 1];
+    const attrLabel = key => attributes[key][lang === "pt-BR" ? 0 : 1];
   const skillLabel = key => skills[key][lang === "pt-BR" ? 0 : 1];
 
   const root = document.createElement("div");
@@ -259,12 +295,7 @@
 
   root.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-      <div>
-        <strong id="pbe-title" style="font-size:17px"></strong>
-        <div id="pbe-version" style="font-size:11px;color:#777;margin-top:2px">
-          v1.1.0
-        </div>
-      </div>
+      <div><strong id="pbe-title" style="font-size:17px"></strong><div id="pbe-version" style="font-size:11px;color:#666">v${SCRIPT_VERSION}</div></div>
       <button id="pbe-close" type="button"></button>
     </div>
     <div style="display:flex;align-items:center;gap:8px;margin:8px 0">
@@ -306,6 +337,18 @@
       </div>
       <div id="pbe-skills" style="max-height:230px;overflow:auto;border:1px solid #ddd;padding:6px"></div>
       <p id="pbe-skills-help" style="margin:6px 0 0;color:#555"></p>
+    </fieldset>
+
+    <fieldset style="margin-bottom:12px">
+      <legend><b id="pbe-reputation-title"></b></legend>
+      <label style="display:flex;gap:7px;align-items:flex-start">
+        <input id="pbe-reputation-enabled" type="checkbox" style="margin-top:3px">
+        <span id="pbe-reputation-enabled-label"></span>
+      </label>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap">
+        <button id="pbe-configure-reputation" type="button"></button>
+        <span id="pbe-reputation-summary" style="color:#555"></span>
+      </div>
     </fieldset>
 
     <div style="display:flex;gap:8px;position:sticky;bottom:0;background:#fff;padding:8px 0">
@@ -428,6 +471,123 @@
     });
   }
 
+  // ============================================================================
+  // PES GV — OVERALL CALCULATION
+  // Replicates TEditor's player Overall calculation based on the inspected bundle.
+  // Keep this section isolated so the formula can be audited independently.
+  // ============================================================================
+  const OVERALL_ATTRIBUTES = [
+    "attackingProwess", "ballControl", "dribbling", "tightPossession",
+    "lowPass", "loftedPass", "finishing", "headingAbility", "placeKicking",
+    "curl", "speed", "acceleration", "kickingPower", "jump",
+    "physicalContact", "balance", "stamina", "defensiveProwess",
+    "ballWinning", "aggression", "weakFootAccuracy"
+  ];
+
+  const OVERALL_POSITION_WEIGHTS = {
+    GK: { jump: 11, physicalContact: 11, gkAwareness: 50, gkReflexes: 48 },
+    CB: { headingAbility: 22, speed: 10, jump: 19, physicalContact: 19, stamina: 9, defensiveProwess: 25, ballWinning: 17, aggression: 8, weakFootAccuracy: 23 },
+    LB: { attackingProwess: 6, ballControl: 9, dribbling: 9, tightPossession: 5, loftedPass: 14, speed: 16, acceleration: 14, jump: 11, physicalContact: 8, balance: 4, stamina: 14, defensiveProwess: 14, ballWinning: 8, aggression: 5, weakFootAccuracy: 56 },
+    RB: { attackingProwess: 6, ballControl: 9, dribbling: 9, tightPossession: 5, loftedPass: 14, speed: 16, acceleration: 14, jump: 11, physicalContact: 8, balance: 4, stamina: 14, defensiveProwess: 14, ballWinning: 8, aggression: 5, weakFootAccuracy: 56 },
+    DMF: { attackingProwess: 7, ballControl: 18, dribbling: 10, tightPossession: 5, lowPass: 18, loftedPass: 19, curl: 12, speed: 3, acceleration: 3, jump: 5, physicalContact: 9, balance: 4, stamina: 14, defensiveProwess: 7, ballWinning: 3, aggression: 1, weakFootAccuracy: 23 },
+    CMF: { attackingProwess: 5, ballControl: 23, dribbling: 16, tightPossession: 8, lowPass: 23, loftedPass: 21, speed: 4, acceleration: 6, physicalContact: 3, balance: 2, stamina: 17, defensiveProwess: 3, weakFootAccuracy: 23 },
+    LMF: { attackingProwess: 7, ballControl: 15, dribbling: 17, tightPossession: 8, lowPass: 7, loftedPass: 12, curl: 4, speed: 24, acceleration: 21, stamina: 13, weakFootAccuracy: 56 },
+    RMF: { attackingProwess: 7, ballControl: 15, dribbling: 17, tightPossession: 8, lowPass: 7, loftedPass: 12, curl: 4, speed: 24, acceleration: 21, stamina: 13, weakFootAccuracy: 56 },
+    AMF: { attackingProwess: 14, ballControl: 23, dribbling: 17, tightPossession: 7, lowPass: 21, loftedPass: 14, finishing: 17, speed: 5, acceleration: 7, physicalContact: 2, balance: 3, stamina: 3, weakFootAccuracy: 37 },
+    LWF: { attackingProwess: 17, ballControl: 19, dribbling: 15, tightPossession: 7, lowPass: 5, loftedPass: 9, finishing: 11, speed: 15, acceleration: 15, kickingPower: 5, physicalContact: 2, balance: 4, stamina: 6, weakFootAccuracy: 47 },
+    RWF: { attackingProwess: 17, ballControl: 19, dribbling: 15, tightPossession: 7, lowPass: 5, loftedPass: 9, finishing: 11, speed: 15, acceleration: 15, kickingPower: 5, physicalContact: 2, balance: 4, stamina: 6, weakFootAccuracy: 47 },
+    SS: { attackingProwess: 15, ballControl: 19, dribbling: 13, tightPossession: 6, lowPass: 9, loftedPass: 9, finishing: 14, speed: 9, acceleration: 21, kickingPower: 6, physicalContact: 2, balance: 5, stamina: 4, weakFootAccuracy: 37 },
+    CF: { attackingProwess: 31, ballControl: 23, dribbling: 9, tightPossession: 5, finishing: 36, headingAbility: 3, speed: 5, acceleration: 5, kickingPower: 3, jump: 3, physicalContact: 8, balance: 2, weakFootAccuracy: 38 }
+  };
+
+  const OVERALL_POSITION_ADJUSTMENT = {
+    GK: 8, CB: 8, LB: 9, RB: 9, DMF: 9, CMF: 8,
+    LMF: 8, RMF: 8, AMF: 8, LWF: 10, RWF: 10, SS: 9, CF: 8
+  };
+  const OVERALL_FAMILIARITY_BONUS = {
+    GK: { A: 5, B: 3 }, CB: { A: 5, B: 3 }, LB: { A: 4, B: 2 },
+    RB: { A: 4, B: 2 }, DMF: { A: 4, B: 2 }, CMF: { A: 5, B: 3 },
+    LMF: { A: 5, B: 3 }, RMF: { A: 5, B: 3 }, AMF: { A: 5, B: 3 },
+    LWF: { A: 4, B: 2 }, RWF: { A: 4, B: 2 }, SS: { A: 5, B: 3 }, CF: { A: 5, B: 3 }
+  };
+
+  function calculatePositionScore(player, position) {
+    const weights = OVERALL_POSITION_WEIGHTS[position];
+    if (!weights) return null;
+    let score = 0;
+    for (const field of OVERALL_ATTRIBUTES) {
+      const value = Number(player[field]);
+      if (!Number.isFinite(value)) return null;
+      score += (field === "weakFootAccuracy" ? value - 1 : value - 25) * (weights[field] || 0);
+    }
+    const gkAwareness = Number(player.gkAwareness);
+    const gkReach = Number(player.gkReach);
+    const gkCatching = Number(player.gkCatching);
+    const gkClearing = Number(player.gkClearing);
+    const gkReflexes = Number(player.gkReflexes);
+    if (![gkAwareness, gkReach, gkCatching, gkClearing, gkReflexes].every(Number.isFinite)) return null;
+    score += (Math.trunc((gkAwareness + gkReach) / 2) - 25) * (weights.gkAwareness || 0);
+    score += (Math.trunc((gkCatching + gkClearing + gkReflexes) / 3) - 25) * (weights.gkReflexes || 0);
+    return Math.trunc((score + 50) / 100);
+  }
+
+  function calculateGeneralScore(player) {
+    let total = 0;
+    for (const field of OVERALL_ATTRIBUTES) {
+      if (field === "weakFootAccuracy") continue;
+      const value = Number(player[field]);
+      if (!Number.isFinite(value)) return null;
+      total += value;
+    }
+    const gkAwareness = Number(player.gkAwareness);
+    const gkReach = Number(player.gkReach);
+    const gkCatching = Number(player.gkCatching);
+    const gkClearing = Number(player.gkClearing);
+    const gkReflexes = Number(player.gkReflexes);
+    if (![gkAwareness, gkReach, gkCatching, gkClearing, gkReflexes].every(Number.isFinite)) return null;
+    total += Math.trunc((gkAwareness + gkReach) / 2);
+    total += Math.trunc((gkCatching + gkClearing + gkReflexes) / 3);
+    return Math.trunc((Math.trunc(total * 100 / 22) + 50) / 100);
+  }
+
+  function transformGeneralScore(value) {
+    if (value <= 61) return value - 9;
+    if (value <= 62) return value - 6;
+    if (value <= 63) return value - 4;
+    if (value <= 64) return value - 2;
+    if (value <= 65) return value;
+    if (value <= 66) return value + 1;
+    if (value <= 67) return value + 3;
+        if (value <= 68) return value + 5;
+    if (value <= 69) return value + 6;
+    if (value <= 70) return value + 7;
+    if (value <= 71) return value + 8;
+    if (value <= 73) return value + 10;
+    if (value <= 75) return value + 12;
+    if (value <= 77) return value + 13;
+    return value + 14;
+  }
+
+  function calculateOverall(player, targetPosition = player.registeredPosition) {
+    const positional = calculatePositionScore(player, targetPosition);
+    if (positional === null) return null;
+    const clampMin = value => Math.max(value, 40);
+    if (player.registeredPosition !== targetPosition) {
+      const familiarityField = ({ GK: "positionGk", CB: "positionCb", LB: "positionLb", RB: "positionRb", DMF: "positionDmf", CMF: "positionCmf", LMF: "positionLmf", RMF: "positionRmf", AMF: "positionAmf", LWF: "positionLwf", RWF: "positionRwf", SS: "positionSs", CF: "positionCf" })[targetPosition];
+      const familiarity = familiarityField ? player[familiarityField] : "C";
+      const bonus = OVERALL_FAMILIARITY_BONUS[targetPosition]?.[familiarity];
+      if (bonus !== undefined) return clampMin(positional + bonus);
+    }
+    const adjusted = positional + (OVERALL_POSITION_ADJUSTMENT[targetPosition] || 0);
+    if (targetPosition === "GK") return clampMin(adjusted);
+    const general = calculateGeneralScore(player);
+    if (general === null) return null;
+    const transformed = transformGeneralScore(general);
+    return clampMin(Math.trunc((adjusted * 60 + transformed * 40 + 50) / 100));
+  }
+  // End of isolated Overall calculation section.
+
+  let reputationBands = [];
   let pendingPlan = null;
 
   function invalidatePlan() {
@@ -447,6 +607,10 @@
     $("#pbe-attributes-title").textContent = t("attributesTitle");
     $("#pbe-add-attribute").textContent = t("addAttribute");
     $("#pbe-attributes-help").textContent = t("attributesHelp");
+    $("#pbe-reputation-title").textContent = t("reputationTitle");
+    $("#pbe-reputation-enabled-label").textContent = t("reputationEnabled");
+    $("#pbe-configure-reputation").textContent = t("configureReputation");
+    updateReputationSummary();
     $("#pbe-skills-title").textContent = t("skillsTitle");
     $("#pbe-skill-search").placeholder = t("skillSearch");
     $("#pbe-select-visible").textContent = t("selectVisible");
@@ -469,7 +633,112 @@
     status(t("ready"));
   }
 
-    function exportConfiguration() {
+  function updateReputationSummary() {
+    const el = $("#pbe-reputation-summary");
+    if (el) el.textContent = reputationBands.length ? t("reputationBandsSummary")(reputationBands.length) : t("reputationNotConfigured");
+  }
+
+  function validateReputationBands(bands) {
+    if (!Array.isArray(bands) || bands.length < 1 || bands.length > 8) return false;
+    let expectedOverall = 40;
+    let expectedRep = 1;
+    for (const band of bands) {
+      const os = Number(band.overallStart), oe = Number(band.overallEnd);
+      const rs = Number(band.reputationStart), re = Number(band.reputationEnd);
+      if (![os, oe, rs, re].every(Number.isInteger)) return false;
+      if (os !== expectedOverall || oe < os || oe > 100) return false;
+      if (rs !== expectedRep || re < rs || re > 8) return false;
+      const overallCount = oe - os + 1;
+      const reputationCount = re - rs + 1;
+      if (overallCount < reputationCount) return false;
+      expectedOverall = oe + 1;
+      expectedRep = re + 1;
+    }
+    return expectedOverall === 101;
+  }
+
+  function getReputationForOverall(overall, bands) {
+    const band = bands.find(item => overall >= item.overallStart && overall <= item.overallEnd);
+    if (!band) return null;
+    const overallCount = band.overallEnd - band.overallStart + 1;
+    const reputationCount = band.reputationEnd - band.reputationStart + 1;
+    return band.reputationStart + Math.floor((overall - band.overallStart) * reputationCount / overallCount);
+  }
+
+  function openReputationModal() {
+    const overlay = document.createElement("div");
+    overlay.id = "pbe-reputation-modal";
+    overlay.style.cssText = "position:fixed;inset:0;z-index:2147483647;background:#0008;display:flex;align-items:center;justify-content:center;padding:16px;font:13px/1.4 Arial,sans-serif";
+    const modal = document.createElement("div");
+    modal.style.cssText = "background:#fff;color:#222;border:2px solid #333;border-radius:10px;padding:16px;width:760px;max-width:100%;max-height:90vh;overflow:auto;box-shadow:0 8px 30px #0007";
+    modal.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><strong id="pbe-rep-modal-title" style="font-size:16px"></strong><button type="button" id="pbe-rep-modal-close">×</button></div>
+      <p id="pbe-rep-modal-help" style="color:#555"></p>
+      <div id="pbe-rep-bands"></div>
+      <div id="pbe-rep-error" role="alert" style="color:#b00020;margin:8px 0"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button type="button" id="pbe-rep-add"></button><span style="flex:1"></span><button type="button" id="pbe-rep-cancel"></button><button type="button" id="pbe-rep-save" style="font-weight:bold"></button></div>`;
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    const q = selector => modal.querySelector(selector);
+    q("#pbe-rep-modal-title").textContent = t("reputationModalTitle");
+    q("#pbe-rep-modal-help").textContent = t("reputationModalHelp");
+    q("#pbe-rep-add").textContent = t("addReputationBand");
+    q("#pbe-rep-cancel").textContent = t("cancel");
+    q("#pbe-rep-save").textContent = t("saveReputationBands");
+
+    let draft = reputationBands.map(b => ({ ...b }));
+    const render = () => {
+      q("#pbe-rep-bands").innerHTML = draft.map((b, i) => `
+        <fieldset data-band="${i}" style="margin:8px 0;padding:8px;border:1px solid #ccc;border-radius:6px">
+          <legend><b>${i + 1}</b></legend>
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px">
+            <label style="display:block">${t("overallFrom")}<input data-key="overallStart" type="number" min="40" max="100" value="${b.overallStart ?? ""}" style="box-sizing:border-box;width:100%;padding:5px"></label>
+            <label style="display:block">${t("overallTo")}<input data-key="overallEnd" type="number" min="40" max="100" value="${b.overallEnd ?? ""}" style="box-sizing:border-box;width:100%;padding:5px"></label>
+            <label style="display:block">${t("reputationFrom")}<input data-key="reputationStart" type="number" min="1" max="8" value="${b.reputationStart ?? ""}" style="box-sizing:border-box;width:100%;padding:5px"></label>
+            <label style="display:block">${t("reputationTo")}<input data-key="reputationEnd" type="number" min="1" max="8" value="${b.reputationEnd ?? ""}" style="box-sizing:border-box;width:100%;padding:5px"></label>
+          </div>
+          <button type="button" data-remove="${i}" style="margin-top:8px">${t("removeBand")}</button>
+        </fieldset>`).join("") || `<p style="color:#805500">${t("reputationNotConfigured")}</p>`;
+      q("#pbe-rep-add").disabled = draft.length >= 8;
+      q("#pbe-rep-bands").querySelectorAll("fieldset").forEach(fieldset => {
+        fieldset.querySelectorAll("input").forEach(input => input.addEventListener("input", () => {
+          const index = Number(fieldset.dataset.band);
+          draft[index][input.dataset.key] = input.value === "" ? "" : Number(input.value);
+          q("#pbe-rep-error").textContent = "";
+        }));
+      });
+      q("#pbe-rep-bands").querySelectorAll("[data-remove]").forEach(button => button.addEventListener("click", () => {
+        draft.splice(Number(button.dataset.remove), 1); render();
+      }));
+    };
+    render();
+    const close = () => overlay.remove();
+    q("#pbe-rep-modal-close").addEventListener("click", close);
+    q("#pbe-rep-cancel").addEventListener("click", close);
+    q("#pbe-rep-add").addEventListener("click", () => {
+      if (draft.length >= 8) return;
+      draft.push({ overallStart: "", overallEnd: "", reputationStart: "", reputationEnd: "" });
+      render();
+    });
+    q("#pbe-rep-save").addEventListener("click", () => {
+      const normalized = draft.map(b => ({
+        overallStart: Number(b.overallStart), overallEnd: Number(b.overallEnd),
+        reputationStart: Number(b.reputationStart), reputationEnd: Number(b.reputationEnd)
+      }));
+      if (!validateReputationBands(normalized)) {
+        q("#pbe-rep-error").textContent = t("reputationValidation");
+        return;
+      }
+      reputationBands = normalized;
+      updateReputationSummary();
+      invalidatePlan();
+      $("#pbe-preview-results").innerHTML = "";
+      close();
+      status(t("ready"));
+    });
+  }
+
+  function exportConfiguration() {
     saveVisibleSkillState();
 
     const config = {
@@ -484,6 +753,10 @@
         field: row.querySelector(".pbe-attr-field").value,
         delta: row.querySelector(".pbe-attr-delta").value
       })),
+      reputation: {
+        enabled: $("#pbe-reputation-enabled").checked,
+        bands: reputationBands.map(b => ({ ...b }))
+      },
       specialSkills: Object.fromEntries(
         [...skillState.entries()].map(([key, state]) => [key, {
           checked: Boolean(state.checked),
@@ -545,14 +818,34 @@
       normalizedSkills[key] = { checked: item.checked, action: item.action };
     }
 
+    const reputationConfig = config.reputation === undefined
+      ? { enabled: false, bands: [] }
+      : config.reputation;
+    if (!reputationConfig || typeof reputationConfig !== "object" ||
+        typeof reputationConfig.enabled !== "boolean" || !Array.isArray(reputationConfig.bands) ||
+        (reputationConfig.bands.length > 0 && !validateReputationBands(reputationConfig.bands))) {
+      throw new Error("Invalid reputation configuration");
+    }
+    if (reputationConfig.enabled && !validateReputationBands(reputationConfig.bands)) {
+      throw new Error("Enabled reputation configuration requires valid bands");
+    }
+    const normalizedReputation = {
+      enabled: reputationConfig.enabled,
+      bands: reputationConfig.bands.map(b => ({
+        overallStart: Number(b.overallStart), overallEnd: Number(b.overallEnd),
+        reputationStart: Number(b.reputationStart), reputationEnd: Number(b.reputationEnd)
+      }))
+    };
+
     return {
-      language: config.language,
+            language: config.language,
       targets: {
         allPositions: config.targets.allPositions,
         positions: [...new Set(config.targets.positions)]
       },
       attributes: normalizedAttributes,
-      specialSkills: normalizedSkills
+      specialSkills: normalizedSkills,
+      reputation: normalizedReputation
     };
   }
 
@@ -570,6 +863,10 @@
 
     $("#pbe-attribute-rows").innerHTML = "";
     config.attributes.forEach(rule => addAttributeRow(rule.field, rule.delta));
+
+    reputationBands = (config.reputation?.bands || []).map(b => ({ ...b }));
+    $("#pbe-reputation-enabled").checked = Boolean(config.reputation?.enabled);
+    updateReputationSummary();
 
     for (const key of Object.keys(skills)) {
       skillState.set(key, config.specialSkills[key] || { checked: false, action: "true" });
@@ -615,6 +912,12 @@
   $("#pbe-language").addEventListener("change", event => {
     lang = event.target.value;
     updateLanguage();
+  });
+
+  $("#pbe-configure-reputation").addEventListener("click", openReputationModal);
+  $("#pbe-reputation-enabled").addEventListener("change", () => {
+    invalidatePlan();
+    $("#pbe-preview-results").innerHTML = "";
   });
 
   $("#pbe-all").addEventListener("change", () => {
@@ -673,16 +976,25 @@
       .filter(([, state]) => state.checked)
       .map(([field, state]) => ({ field, value: state.action === "true" }));
 
+    const reputationEnabled = $("#pbe-reputation-enabled").checked;
+    if (reputationEnabled && !validateReputationBands(reputationBands)) {
+      throw new Error(t("reputationValidation"));
+    }
+
     const plan = [];
     const preview = [];
 
     for (const { player, index } of targets) {
+      // Reputation uses the post-edit numerical attributes when attribute rules
+      // and reputation are enabled together in the same operation.
+      const playerAfterNumericChanges = { ...player };
       for (const rule of numericRules) {
         const [min, max] = attributes[rule.field].slice(2);
         const oldValue = Number(player[rule.field]);
         if (!Number.isFinite(oldValue)) continue;
 
         const newValue = Math.max(min, Math.min(max, oldValue + rule.delta));
+        playerAfterNumericChanges[rule.field] = newValue;
         if (newValue === oldValue) continue;
 
         plan.push([`players.${index}.${rule.field}`, newValue]);
@@ -707,6 +1019,28 @@
           before: oldValue ? t("checked") : t("unchecked"),
           after: rule.value ? t("checked") : t("unchecked")
         });
+      }
+
+      if (reputationEnabled) {
+        const overall = calculateOverall(playerAfterNumericChanges);
+        if (overall === null) {
+          throw new Error(`Could not calculate Overall for ${player.playerName || `player #${index}`}. Check the player's attribute values.`);
+        }
+        const newReputation = getReputationForOverall(overall, reputationBands);
+        if (newReputation === null) {
+          throw new Error(`No reputation band covers Overall ${overall} for ${player.playerName || `player #${index}`}.`);
+        }
+        const oldReputation = Number(player.reputation);
+        if (oldReputation !== newReputation) {
+          plan.push([`players.${index}.reputation`, newReputation]);
+          preview.push({
+            player: player.playerName,
+            position: player.registeredPosition,
+            field: `${t("reputationField")} (Overall ${overall})`,
+            before: Number.isFinite(oldReputation) ? oldReputation : String(player.reputation ?? "—"),
+            after: newReputation
+          });
+        }
       }
     }
 
