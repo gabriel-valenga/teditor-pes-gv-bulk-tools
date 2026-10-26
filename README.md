@@ -223,6 +223,12 @@ Other supported skills may include additional dribbling, passing, shooting, defe
 
 Descriptions are brief explanations of the skill names, not a complete specification of PES 2021's in-game mechanics.
 
+## Overall Rating Formula
+
+The Overall rating depends on the player's attributes and the position being evaluated. Each position uses its own attribute weights, and outfield players also use a general-score component. The formula documentation describes the attribute weights, intermediate calculations, position adjustments, rounding, and final calculation.
+
+See the **[Overall rating formula documentation](docs/overall-formula.md)** for the detailed explanation.
+
 ## Recommended Workflow
 
 1. Load the correct .ted file exported from PES2021 in TEditor.

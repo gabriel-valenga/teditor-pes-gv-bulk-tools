@@ -223,6 +223,12 @@ Outras habilidades suportadas podem incluir capacidades adicionais relacionadas 
 
 As descrições são explicações resumidas dos nomes das habilidades, não uma especificação completa de suas mecânicas no PES 2021.
 
+## Fórmula do Overall
+
+A nota Overall depende dos atributos do jogador e da posição avaliada. Cada posição utiliza pesos próprios para os atributos, e jogadores de linha também usam uma pontuação geral complementar. A documentação detalha os pesos dos atributos, os cálculos intermediários, os ajustes por posição, os arredondamentos e a fórmula final.
+
+Consulte a **[documentação detalhada da fórmula do Overall](docs/overall-formula.pt-BR.md)** para entender como o cálculo funciona.
+
 ## Fluxo de utilização recomendado
 
 1. Carregue o arquivo .ted do time exportado do PES 2021 no TEditor.
