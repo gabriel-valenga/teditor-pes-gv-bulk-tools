@@ -46,7 +46,10 @@
 
   document.getElementById("pes-bulk-editor")?.remove();
 
-  const positions = ["GK", "CB", "DMF", "CMF", "LB", "AMF", "RWF", "LWF", "RB", "CF"];
+  const positions = [
+    "GK", "RB", "CB", "LB", "DMF", "CMF",
+    "AMF", "RMF", "LMF", "RWF", "LWF", "SS", "CF"
+  ];
 
   const attributes = {
     attackingProwess: ["Talento Ofensivo", "Attacking Prowess", 40, 99],

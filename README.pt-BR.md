@@ -159,14 +159,17 @@ O filtro de posições utiliza os seguintes códigos:
 | Código | Posição |
 |---|---|
 | GK | Goleiro |
+| RB | Lateral-direito |
 | CB | Zagueiro central |
+| LB | Lateral-esquerdo |
 | DMF | Volante |
 | CMF | Meio-campista central |
-| LB | Lateral-esquerdo |
 | AMF | Meio-campista ofensivo |
+| RMF | Meio-campista pela direita |
+| LMF | Meio-campista pela esquerda |
 | RWF | Ponta-direita |
 | LWF | Ponta-esquerda |
-| RB | Lateral-direito |
+| SS | Segundo atacante |
 | CF | Centroavante |
 
 Selecione as posições que deseja incluir na edição. Se nenhum filtro de posição for aplicado, a ferramenta poderá selecionar todos os jogadores válidos.

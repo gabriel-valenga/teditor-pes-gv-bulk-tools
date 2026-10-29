@@ -159,14 +159,17 @@ The position filter uses these position codes:
 | Code | Position |
 |---|---|
 | GK | Goalkeeper |
+| RB | Right Back |
 | CB | Centre Back |
+| LB | Left Back |
 | DMF | Defensive Midfielder |
 | CMF | Central Midfielder |
-| LB | Left Back |
 | AMF | Attacking Midfielder |
+| RMF | Attacking Midfielder |
+| LMF | Attacking Midfielder |
 | RWF | Right Wing Forward |
 | LWF | Left Wing Forward |
-| RB | Right Back |
+| SS | Second Striker |
 | CF | Centre Forward |
 
 Select the positions you want to target. If no position filter is applied, the tool can target all valid players.
